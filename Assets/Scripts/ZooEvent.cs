@@ -23,7 +23,7 @@ public interface IZooEvent
     /// The season in which the event occurs.
     /// Should match with the enum in Game Manager.
     /// </summary>
-    int Season { get; set; }
+    GameManager.SEASONS Season { get; set; }
     /// <summary>
     /// The benefit/deficit of result one.
     /// This will be added to whatever value is determined in the child classes.
