@@ -93,21 +93,27 @@ public class Animal : MonoBehaviour
     /// </summary>
     public void DailyRoutine()
     {
-        UpdateHappiness();
-        CheckInjury();
-        // TODO Run broken enclosure function
+        if (currentEnclosure_UseProperty != ENCLOSURE.None)
+        {
+            UpdateHappiness();
+            CheckInjury();
+            // TODO Run broken enclosure function
+        }
     }
 
     private void CheckInjury()
     {
-        float random = Random.Range(0.01f, 1f);
-        if (random > Happiness)
-            IsInjured = true;
+        if (!IsInjured)
+        {
+            float random = Random.Range(0.01f, 1f);
+            if (random > Happiness)
+                IsInjured = true;
+        }
     }
 
     private void UpdateHappiness()
     {
-        // TODO Implement enclosure happiness modifier
+        // TODO Implement enclosure happiness modifier and broken enclosure
         if (!IsInjured)
             Happiness *= (.99f - (.01f * NumberInExhibit));
         else

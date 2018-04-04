@@ -44,5 +44,5 @@ public interface IZooEvent
     /// The action taken by the event.
     /// Every event will have one, but each class will implement it differently.
     /// </summary>
-    void EventAction();
+    void EventAction(int result);
 }

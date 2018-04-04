@@ -7,12 +7,12 @@ public class MoneyEvent : MonoBehaviour, IZooEvent
     public string DescriptionText { get; set; }
     public string OptionOne { get; set; }
     public string OptionTwo { get; set; }
-    public int Season { get; set; }
+    public GameManager.SEASONS Season { get; set; }
     public int ResultOne { get; set; }
     public int ResultTwo { get; set; }
     public bool EventOccurred { get; set; }
 
-    public void EventAction()
+    public void EventAction(int result)
     {
         throw new System.NotImplementedException();
     }
