@@ -33,7 +33,18 @@ public class Animal : MonoBehaviour
     /// The animal's happiness.
     /// Should be a value between 0 and 1 (percentage-based)
     /// </summary>
-    public float Happiness { get; private set; }
+    public float Happiness
+    {
+        get
+        {
+            return happiness_UseProperty;
+        }
+        private set
+        {
+            // Ensure that happiness is between 0 and 1, inclusive
+            happiness_UseProperty = Mathf.Clamp(value, 0f, 1f);
+        }
+    }
     /// <summary>
     /// Total cost of food per day
     /// </summary>
@@ -82,6 +93,10 @@ public class Animal : MonoBehaviour
     /// The current tier of enclosure
     /// </summary>
     ENCLOSURE currentEnclosure_UseProperty = 0;
+    /// <summary>
+    /// Happiness
+    /// </summary>
+    private float happiness_UseProperty;
 
     void Start()
     {
@@ -97,7 +112,7 @@ public class Animal : MonoBehaviour
         {
             UpdateHappiness();
             CheckInjury();
-            // TODO Run broken enclosure function
+            CheckMalfunction();
         }
     }
 
@@ -113,14 +128,26 @@ public class Animal : MonoBehaviour
 
     private void UpdateHappiness()
     {
-        // TODO Implement enclosure happiness modifier and broken enclosure
-        if (!IsInjured)
-            Happiness *= (.99f - (.01f * NumberInExhibit));
-        else
-            Happiness *= (.75f - (.01f * NumberInExhibit));
+        // If there isn't a problem, use the happiness modifier
+        if (!IsInjured && !NeedsRepair)
+            Happiness *= enclosureHappinessModifiers[(int)CurrentEnclosure];
+        // If there's an injury, cut that by 25% (generously)
+        else if (IsInjured && !NeedsRepair)
+            Happiness *= .75f * enclosureHappinessModifiers[(int)CurrentEnclosure];
+        // If the enclosure is broken, ditch the happiness modifier
+        if (NeedsRepair)
+            Happiness *= .75f;
     }
 
-    // TODO Implement function to check for a broken enclosure
+    private void CheckMalfunction()
+    {
+        if(!NeedsRepair)
+        {
+            float random = Random.Range(.01f, 1f);
+            if (random > enclosureBreakChance[(int)CurrentEnclosure])
+                NeedsRepair = true;
+        }
+    }
 
     // TODO Implement function to enable/disable (if value is 0)
     // and change texture of enclosure in-game based on the value of the enum

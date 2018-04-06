@@ -42,13 +42,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [Tooltip("Player's money.")]
     [SerializeField]
-    float money;
+    public float money;
     /// <summary>
     /// List of animals in the game
     /// </summary>
-    [Tooltip("Instance of each animal.")]
+    [Tooltip("Instance of each animal. Must start Lion, Elephant, Giraffe, Polar Bear.")]
     [SerializeField]
-    List<Animal> animals;
+    public List<Animal> animals;
+    /// <summary>
+    /// Text file containing the events
+    /// </summary>
+    [Tooltip("Text file to define events.")]
+    [SerializeField]
+    TextAsset eventFile;
 
     // Properties
     /// <summary>
@@ -79,7 +85,70 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update () 
 	{
+
 	}
+
+    void InitializeEvents()
+    {
+        // Split the file up by line
+        var eventContent = eventFile.text.Split('\n');
+        // Run through each line individually
+        foreach (string s in eventContent)
+        {
+            // Declare variables to use for results
+            int season = -1, resultOne = -1, resultTwo = -1, eventType = -1, animal = -1, tem = -1;
+            Debug.Log(s);
+            // Split the line by tabs (so I can use commas in the event descriptions)
+            var individualEventContent = s.Split('\t');
+            // Declare an event of some variety so it doesn't freak out over the next part
+            IZooEvent tempEvent = null;
+            // Determine what type of event it is
+            // 0 - Money Event
+            // 1 - Animal Event
+            if (int.TryParse(individualEventContent[0], out tem))
+                eventType = tem;
+            tem = -1;
+            // Initialize an event of the proper type
+            switch(eventType)
+            {
+                // Initialize a Money Event
+                case 0:
+                    tempEvent = new MoneyEvent();
+                    break;
+                // Initialize an Animal Event with animal type
+                case 1:
+                    if (int.TryParse(individualEventContent[7], out tem))
+                        animal = tem;
+                    tempEvent = new AnimalEvent(animal);
+                    tem = -1;
+                    break;
+                default:
+                    break;
+            }
+            // Separate out description text
+            tempEvent.DescriptionText = individualEventContent[1];
+            // And option 1
+            tempEvent.OptionOne = individualEventContent[2];
+            // ...and option 2
+            tempEvent.OptionTwo = individualEventContent[3];
+            // Get the season of the event
+            if (int.TryParse(individualEventContent[4], out tem))
+                season = tem;
+            tempEvent.Season = (SEASONS)season;
+            tem = -1;
+            // Get the first result
+            if (int.TryParse(individualEventContent[5], out tem))
+                resultOne = tem;
+            tempEvent.ResultOne = resultOne;
+            tem = -1;
+            // ...and the second
+            if (int.TryParse(individualEventContent[6], out tem))
+                resultTwo = tem;
+            tempEvent.ResultTwo = resultTwo;
+            tem = -1;
+            possibleEvents.Add(tempEvent);
+        }
+    }
 
     // TODO Write Game Loop
     /*

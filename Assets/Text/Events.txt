@@ -1,0 +1,36 @@
+0	An anonymous donor has donated $200.	Accept	Decline	0	200	0	
+0	An anonymous donor has donated $300.	Accept	Decline	0	300	0	
+0	An anonymous donor has donated $50.	Accept	Decline	0	50	0	
+1	Do you want lions?	Yes	No	0	1	0	0
+0	An anonymous donor has donated $150.	Accept	Decline	0	150	0	
+0	An anonymous donor has donated $500.	Accept	Decline	0	500	0	
+0	An anonymous donor has donated $50.	Accept	Decline	0	50	0	
+0	An anonymous donor has donated $400.	Accept	Decline	0	400	0	
+0	An anonymous donor has donated $250.	Accept	Decline	0	250	0	
+0	An anonymous donor has donated $200.	Accept	Decline	1	200	0	
+0	An anonymous donor has donated $300.	Accept	Decline	1	300	0	
+0	An anonymous donor has donated $50.	Accept	Decline	1	50	0	
+1	Do you want elephants?	Yes	No	1	1	0	1
+0	An anonymous donor has donated $150.	Accept	Decline	1	150	0	
+0	An anonymous donor has donated $500.	Accept	Decline	1	500	0	
+0	An anonymous donor has donated $50.	Accept	Decline	1	50	0	
+0	An anonymous donor has donated $400.	Accept	Decline	1	400	0	
+0	An anonymous donor has donated $250.	Accept	Decline	1	250	0	
+0	An anonymous donor has donated $200.	Accept	Decline	2	200	0	
+0	An anonymous donor has donated $300.	Accept	Decline	2	300	0	
+0	An anonymous donor has donated $50.	Accept	Decline	2	50	0	
+1	Do you want giraffes?	Yes	No	2	1	0	2
+0	An anonymous donor has donated $150.	Accept	Decline	2	150	0	
+0	An anonymous donor has donated $500.	Accept	Decline	2	500	0	
+0	An anonymous donor has donated $50.	Accept	Decline	2	50	0	
+0	An anonymous donor has donated $400.	Accept	Decline	2	400	0	
+0	An anonymous donor has donated $250.	Accept	Decline	2	250	0	
+0	An anonymous donor has donated $200.	Accept	Decline	3	200	0	
+0	An anonymous donor has donated $300.	Accept	Decline	3	300	0	
+0	An anonymous donor has donated $50.	Accept	Decline	3	50	0	
+1	Do you want polar bears?	Yes	No	3	1	0	3
+0	An anonymous donor has donated $150.	Accept	Decline	3	150	0	
+0	An anonymous donor has donated $500.	Accept	Decline	3	500	0	
+0	An anonymous donor has donated $50.	Accept	Decline	3	50	0	
+0	An anonymous donor has donated $400.	Accept	Decline	3	400	0	
+0	An anonymous donor has donated $250.	Accept	Decline	3	250	0	
