@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
 
     // Properties
     /// <summary>
-    /// Calculates the average of every animal's 
+    /// Calculates the average of every animal's satisfaction
     /// </summary>
     float OverallSatisfaction
     {
@@ -76,10 +76,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    private bool dayEnd;
+    private bool eventEnd;
+
 	// Use this for initialization
 	void Start ()
     {
         // TODO Start Game Loop	
+        StartCoroutine(GameLoop());
     }
 
     // Update is called once per frame
@@ -168,6 +173,30 @@ public class GameManager : MonoBehaviour
      *      eventEnd = false
      *  summary panel and end turn crap
      */
+     private IEnumerator GameLoop()
+    {
+        for(int i = 0; i <= (int)SEASONS.WINTER; i++)
+        {
+
+
+            for(int d = 0; i <= (int)DAYS.Sunday; d++)
+            {
+
+                while (!eventEnd)
+                    yield return null;
+
+                currentDay++;
+                while (!dayEnd)
+                    yield return null;
+                dayEnd = false;
+            }
+
+          ;
+        }
+
+
+    }
+
 
     // TODO Event Response button function
     /*
@@ -175,22 +204,55 @@ public class GameManager : MonoBehaviour
      *  This result should be 1 or 2 and be passed to the active event's EventAction function
      *  Then set eventEnd or whatever to true and the game loop will continue
      */ 
+     public void EventResponse(int choice)
+    {
+
+        eventEnd = true;
+    }
+
+
+   
 
     // TODO Upgrade enclosure button function
     // Add the upgrade cost to the daily cost and increase the value of the enum in animal by 1
     // Should not be available if the enclosure is already gold
+    public void Upgrade()
+    {
+
+    }
+
 
     // TODO Repair enclosure button function
     // Add the cost to the daily cost and set the needs repair bool in animal to true
+    public void Repair()
+    {
+
+    }
+
 
     // TODO Vet button function
     // Add the cost to the daily cost and set the injured bool in animal to true
+    public void Vet()
+    {
+
+
+    }
+
 
     // TODO Summary function
     // Total up the daily costs and display them
     // Calculate the visitors for the day and how much they spent
     // Run each animal's daily routine
-    
+    private void Summary()
+    {
+
+    }
+
+
     // TODO end day button
     // Tell the game loop to continue
+    public void EndDay()
+    {
+        dayEnd = true;
+    }
 }
