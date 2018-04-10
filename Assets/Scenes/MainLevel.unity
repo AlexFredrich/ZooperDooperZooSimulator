@@ -879,7 +879,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   money: 0
   animals: []
-  eventFile: {fileID: 0}
+  eventFile: {fileID: 4900000, guid: 7efc45878ff02834c819dbca71bf28de, type: 3}
   eventSituation: {fileID: 382891376}
   buttonOptionOne: {fileID: 210362263}
   buttonOptionTwo: {fileID: 2019430610}
