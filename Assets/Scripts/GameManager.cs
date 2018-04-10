@@ -81,7 +81,10 @@ public class GameManager : MonoBehaviour
     Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
     [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton;
-    
+    [SerializeField]
+    GameObject enclosurePanel;
+    [SerializeField]
+    int upgradeCost = 150, vetCost = 75, repairCost = 100;
 
 
     private bool dayEnd;
@@ -90,6 +93,8 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
+        enclosurePanel.SetActive(false);
+        money = 10000;
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
     }
@@ -188,6 +193,7 @@ public class GameManager : MonoBehaviour
 
             for(int d = 0; i <= (int)DAYS.Sunday; d++)
             {
+                dayText.text = (Days)d;
                 eventSituation.text = possibleEvents[currentDay].DescriptionText;
                 buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
                 buttonOptionTwo.text = possibleEvents[currentDay].OptionTwo;
@@ -195,9 +201,10 @@ public class GameManager : MonoBehaviour
                 while (!eventEnd)
                     yield return null;
 
-                currentDay++;
+                
                 while (!dayEnd)
                     yield return null;
+                currentDay++;
                 dayEnd = false;
             }
 
@@ -224,17 +231,19 @@ public class GameManager : MonoBehaviour
 
     public void Enclosure(int animal)
     {
-        //enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: " + 
+        enclosurePanel.SetActive(true);
+        enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: Healthy.";
 
-        if(animals[animal].IsInjured == true)
+        if(animals[animal].IsInjured == true && money >= vetCost)
         {
+            enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: In need of vet.";
             vetButton.enabled = true;
         }
-        if(animals[animal].NeedsRepair == true)
+        if(animals[animal].NeedsRepair == true && money >= repairCost)
         {
             repairButton.enabled = true;
         }
-        if(animals[animal].CurrentEnclosure < Animal.ENCLOSURE.Gold)
+        if(animals[animal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
             upgradeButton.enabled = true;
         }
@@ -247,8 +256,9 @@ public class GameManager : MonoBehaviour
     // Should not be available if the enclosure is already gold
     public void Upgrade(int animal)
     {
-
-        animals[animal].CurrentEnclosure++;
+        
+            money -= upgradeCost;
+            animals[animal].CurrentEnclosure++;
 
     }
 
@@ -257,6 +267,7 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the needs repair bool in animal to true
     public void Repair(int animal)
     {
+        money -= repairCost;
         animals[animal].NeedsRepair = false;
     }
 
@@ -265,7 +276,7 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the injured bool in animal to true
     public void Vet(int animal)
     {
-
+        money -= vetCost;
         animals[animal].IsInjured = false;
     }
 
@@ -276,11 +287,15 @@ public class GameManager : MonoBehaviour
     // Run each animal's daily routine
     private void Summary()
     {
-
-        foreach(Animal a in animals)
+        
+        foreach (Animal a in animals)
         {
             a.DailyRoutine();
+            money -= a.TotalFoodCost;
+
         }
+        statusSummary.text = "Current Money: " + money + " \nOverall Animal Happiness: " + OverallSatisfaction;
+        
     }
 
 
