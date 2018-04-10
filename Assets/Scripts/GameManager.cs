@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
     [SerializeField]
-    Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton;
+    Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
     GameObject enclosurePanel;
     [SerializeField]
@@ -94,16 +94,12 @@ public class GameManager : MonoBehaviour
 	void Start ()
     {
         enclosurePanel.SetActive(false);
+        
         money = 10000;
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
     }
 
-    // Update is called once per frame
-    void Update () 
-	{
-
-	}
 
     void InitializeEvents()
     {
@@ -193,7 +189,10 @@ public class GameManager : MonoBehaviour
 
             for(int d = 0; i <= (int)DAYS.Sunday; d++)
             {
-                dayText.text = (Days)d;
+                enclosurePanel.SetActive(false);
+                endDayButton.enabled = false;
+                DAYS day = (DAYS)d;
+                dayText.text = day.ToString() + " Day: " + currentDay;
                 eventSituation.text = possibleEvents[currentDay].DescriptionText;
                 buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
                 buttonOptionTwo.text = possibleEvents[currentDay].OptionTwo;
@@ -224,8 +223,8 @@ public class GameManager : MonoBehaviour
      public void EventResponse(int choice)
     {
         possibleEvents[currentDay].EventAction(choice);
-        
 
+        endDayButton.enabled = true;
         eventEnd = true;
     }
 
@@ -247,6 +246,8 @@ public class GameManager : MonoBehaviour
         {
             upgradeButton.enabled = true;
         }
+
+        
 
     }
    
