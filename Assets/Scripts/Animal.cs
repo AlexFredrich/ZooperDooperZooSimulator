@@ -8,11 +8,11 @@ public class Animal : MonoBehaviour
     /// <summary>
     /// Is an animal injured?
     /// </summary>
-    public bool IsInjured { get; private set; }
+    public bool IsInjured { get; set; }
     /// <summary>
     /// Does the enclosure need repairs?
     /// </summary>
-    public bool NeedsRepair { get; private set; }
+    public bool NeedsRepair { get; set; }
     public ENCLOSURE CurrentEnclosure
     {
         get

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour 
 {
@@ -75,6 +76,12 @@ public class GameManager : MonoBehaviour
             return result / activeAnimals;
         }
     }
+    //UI Messages
+    [SerializeField]
+    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
+    [SerializeField]
+    Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton;
+    
 
 
     private bool dayEnd;
@@ -181,6 +188,9 @@ public class GameManager : MonoBehaviour
 
             for(int d = 0; i <= (int)DAYS.Sunday; d++)
             {
+                eventSituation.text = possibleEvents[currentDay].DescriptionText;
+                buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
+                buttonOptionTwo.text = possibleEvents[currentDay].OptionTwo;
 
                 while (!eventEnd)
                     yield return null;
@@ -206,36 +216,57 @@ public class GameManager : MonoBehaviour
      */ 
      public void EventResponse(int choice)
     {
+        possibleEvents[currentDay].EventAction(choice);
+        
 
         eventEnd = true;
     }
 
+    public void Enclosure(int animal)
+    {
+        //enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: " + 
 
+        if(animals[animal].IsInjured == true)
+        {
+            vetButton.enabled = true;
+        }
+        if(animals[animal].NeedsRepair == true)
+        {
+            repairButton.enabled = true;
+        }
+        if(animals[animal].CurrentEnclosure < Animal.ENCLOSURE.Gold)
+        {
+            upgradeButton.enabled = true;
+        }
+
+    }
    
 
     // TODO Upgrade enclosure button function
     // Add the upgrade cost to the daily cost and increase the value of the enum in animal by 1
     // Should not be available if the enclosure is already gold
-    public void Upgrade()
+    public void Upgrade(int animal)
     {
+
+        animals[animal].CurrentEnclosure++;
 
     }
 
 
     // TODO Repair enclosure button function
     // Add the cost to the daily cost and set the needs repair bool in animal to true
-    public void Repair()
+    public void Repair(int animal)
     {
-
+        animals[animal].NeedsRepair = false;
     }
 
 
     // TODO Vet button function
     // Add the cost to the daily cost and set the injured bool in animal to true
-    public void Vet()
+    public void Vet(int animal)
     {
 
-
+        animals[animal].IsInjured = false;
     }
 
 
@@ -246,6 +277,10 @@ public class GameManager : MonoBehaviour
     private void Summary()
     {
 
+        foreach(Animal a in animals)
+        {
+            a.DailyRoutine();
+        }
     }
 
 
