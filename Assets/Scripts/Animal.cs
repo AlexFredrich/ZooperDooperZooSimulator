@@ -73,6 +73,7 @@ public class Animal : MonoBehaviour
     [SerializeField]
     float foodCost_UseProperty;
     [Tooltip("The number of animals on display.")]
+    [SerializeField]
     int numberInExhibit_UseProperty;
     [Tooltip("The type of animal (lion, penguin, etc.)")]
     [SerializeField]

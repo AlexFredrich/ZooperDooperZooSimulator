@@ -21,9 +21,17 @@ public class GameManager : MonoBehaviour
 
     // Private Fields
     /// <summary>
+    /// Amount each person spends in a day
+    /// </summary>
+    float spentPerPerson = 5f;
+    /// <summary>
     /// Current day (should be between 1 and 28)
     /// </summary>
     int currentDay = 1;
+    /// <summary>
+    /// Number of people visiting in a day
+    /// </summary>
+    int peoplePerDay = 250;
     /// <summary>
     /// List of all possible events
     /// </summary>
@@ -43,7 +51,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [Tooltip("Player's money.")]
     [SerializeField]
-    public float money;
+    public float money = 10000;
     /// <summary>
     /// List of animals in the game
     /// </summary>
@@ -92,10 +100,7 @@ public class GameManager : MonoBehaviour
 
 	// Use this for initialization
 	void Start ()
-    {
-        enclosurePanel.SetActive(false);
-        
-        money = 10000;
+    {        
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
     }
@@ -183,23 +188,22 @@ public class GameManager : MonoBehaviour
      */
      private IEnumerator GameLoop()
     {
-        for(int i = 0; i <= (int)SEASONS.WINTER; i++)
+        InitializeEvents();
+        for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
-
-
-            for(int d = 0; i <= (int)DAYS.Sunday; d++)
+            animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
+            for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
                 enclosurePanel.SetActive(false);
                 endDayButton.enabled = false;
-                DAYS day = (DAYS)d;
-                dayText.text = day.ToString() + " Day: " + currentDay;
+                dayText.text = d.ToString() + " Day: " + currentDay;
                 eventSituation.text = possibleEvents[currentDay].DescriptionText;
                 buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
                 buttonOptionTwo.text = possibleEvents[currentDay].OptionTwo;
 
                 while (!eventEnd)
                     yield return null;
-
+                // TODO weekends
                 
                 while (!dayEnd)
                     yield return null;
@@ -223,7 +227,7 @@ public class GameManager : MonoBehaviour
      public void EventResponse(int choice)
     {
         possibleEvents[currentDay].EventAction(choice);
-
+        //TODO response, hide event panel
         endDayButton.enabled = true;
         eventEnd = true;
     }
@@ -233,18 +237,23 @@ public class GameManager : MonoBehaviour
         enclosurePanel.SetActive(true);
         enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: Healthy.";
 
-        if(animals[animal].IsInjured == true && money >= vetCost)
+        if (animals[animal].IsInjured == true && money >= vetCost)
         {
             enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: In need of vet.";
+            // TODO move money condition in here
             vetButton.enabled = true;
+            // TODO remove these on back button
+            vetButton.onClick.AddListener(delegate { Vet(animal); });
         }
         if(animals[animal].NeedsRepair == true && money >= repairCost)
         {
             repairButton.enabled = true;
+            repairButton.onClick.AddListener(delegate { Repair(animal); });
         }
         if(animals[animal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
             upgradeButton.enabled = true;
+            upgradeButton.onClick.AddListener(delegate { Upgrade(animal); });
         }
 
         
@@ -258,8 +267,8 @@ public class GameManager : MonoBehaviour
     public void Upgrade(int animal)
     {
         
-            money -= upgradeCost;
-            animals[animal].CurrentEnclosure++;
+        money -= upgradeCost;
+        animals[animal].CurrentEnclosure++;
 
     }
 
