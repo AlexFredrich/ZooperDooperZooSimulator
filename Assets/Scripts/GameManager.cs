@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour
 
                 while (!eventEnd)
                     yield return null;
-                // TODO weekends
+                // TODO weekends and people count and spent calculations
                 
                 while (!dayEnd)
                     yield return null;
@@ -237,13 +237,18 @@ public class GameManager : MonoBehaviour
         enclosurePanel.SetActive(true);
         enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: Healthy.";
 
-        if (animals[animal].IsInjured == true && money >= vetCost)
+        if (animals[animal].IsInjured == true)
         {
+            
             enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: In need of vet.";
             // TODO move money condition in here
-            vetButton.enabled = true;
-            // TODO remove these on back button
-            vetButton.onClick.AddListener(delegate { Vet(animal); });
+            if (money >= vetCost)
+            {
+                vetButton.enabled = true;
+
+                // TODO remove these on back button
+                vetButton.onClick.AddListener(delegate { Vet(animal); });
+            }
         }
         if(animals[animal].NeedsRepair == true && money >= repairCost)
         {
@@ -257,6 +262,13 @@ public class GameManager : MonoBehaviour
         }
 
         
+
+    }
+
+    public void ExitEnclosurePanel()
+    {
+        enclosurePanel.SetActive(false);
+        vetButton.onClick.RemoveListener(delegate { Vet(animal); });
 
     }
    
