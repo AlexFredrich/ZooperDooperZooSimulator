@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     float spentPerPerson = 5f;
     /// <summary>
+    /// The active enclosure
+    /// </summary>
+    int activeAnimal;
+    /// <summary>
     /// Current day (should be between 1 and 28)
     /// </summary>
     int currentDay = 1;
@@ -234,31 +238,32 @@ public class GameManager : MonoBehaviour
 
     public void Enclosure(int animal)
     {
+        activeAnimal = animal;
         enclosurePanel.SetActive(true);
-        enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: Healthy.";
+        enclosureText.text = "Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
 
-        if (animals[animal].IsInjured == true)
+        if (animals[activeAnimal].IsInjured == true)
         {
             
-            enclosureText.text = "Animal Happiness: " + animals[animal].Happiness + " Animal Health: In need of vet.";
+            enclosureText.text = "Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: In need of vet.";
             // TODO move money condition in here
             if (money >= vetCost)
             {
                 vetButton.enabled = true;
 
                 // TODO remove these on back button
-                vetButton.onClick.AddListener(delegate { Vet(animal); });
+                vetButton.onClick.AddListener(delegate { Vet(activeAnimal); });
             }
         }
-        if(animals[animal].NeedsRepair == true && money >= repairCost)
+        if(animals[activeAnimal].NeedsRepair == true && money >= repairCost)
         {
             repairButton.enabled = true;
-            repairButton.onClick.AddListener(delegate { Repair(animal); });
+            repairButton.onClick.AddListener(delegate { Repair(activeAnimal); });
         }
-        if(animals[animal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
+        if(animals[activeAnimal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
             upgradeButton.enabled = true;
-            upgradeButton.onClick.AddListener(delegate { Upgrade(animal); });
+            upgradeButton.onClick.AddListener(delegate { Upgrade(activeAnimal); });
         }
 
         
@@ -268,8 +273,9 @@ public class GameManager : MonoBehaviour
     public void ExitEnclosurePanel()
     {
         enclosurePanel.SetActive(false);
-        vetButton.onClick.RemoveListener(delegate { Vet(animal); });
-
+        vetButton.onClick.RemoveListener(delegate { Vet(activeAnimal); });
+        repairButton.onClick.RemoveListener(delegate { Vet(activeAnimal); });
+        upgradeButton.onClick.RemoveListener(delegate { Vet(activeAnimal); });
     }
    
 
