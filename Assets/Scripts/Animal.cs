@@ -25,7 +25,7 @@ public class Animal : MonoBehaviour
             if ((int)value < (System.Enum.GetNames(typeof(ENCLOSURE))).Length)
             {
                 currentEnclosure_UseProperty = value;
-                // TODO call the below function to update appearance of the enclosure
+                UpdateEnclosure();
             }
         }
     }
@@ -152,4 +152,34 @@ public class Animal : MonoBehaviour
 
     // TODO Implement function to enable/disable (if value is 0)
     // and change texture of enclosure in-game based on the value of the enum
+    private void UpdateEnclosure()
+    {
+        switch(CurrentEnclosure)
+        {
+            case ENCLOSURE.None:
+                {
+                    gameObject.GetComponent<Renderer>().enabled = false;
+                    // TODO reset texture
+                    break;
+                }
+            case ENCLOSURE.Bronze:
+                {
+                    gameObject.GetComponent<Renderer>().enabled = true;
+                    // TODO set bronze texture
+                    break;
+                }
+            case ENCLOSURE.Silver:
+                {
+                    gameObject.GetComponent<Renderer>().enabled = true;
+                    // TODO set bronze texture
+                    break;
+                }
+            case ENCLOSURE.Gold:
+                {
+                    gameObject.GetComponent<Renderer>().enabled = true;
+                    // TODO set bronze texture
+                    break;
+                }
+        }
+    }
 }
