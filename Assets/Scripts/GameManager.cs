@@ -101,7 +101,17 @@ public class GameManager : MonoBehaviour
 
     private bool dayEnd;
     private bool eventEnd;
+    private int seasonModifier;
+    private int dayModifier;
+    private float dailyCosts;
 
+
+    private int overallMaintenanceCost = 200;
+    private int employeeCosts = 250;
+
+    private float governmentGrant = 2000;
+
+    private float dailyEarnings;
 	// Use this for initialization
 	void Start ()
     {        
@@ -196,8 +206,24 @@ public class GameManager : MonoBehaviour
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
             animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
+            
+            if(i == SEASONS.SUMMER)
+                seasonModifier = 3;
+            else if(i == SEASONS.SPRING || i == SEASONS.FALL)
+                seasonModifier = 2;  
+            else
+                seasonModifier = 1;
+
+            if (OverallSatisfaction >= .75)
+                dailyEarnings += governmentGrant;
+            else if (OverallSatisfaction >= .5 && OverallSatisfaction <= .75)
+                dailyEarnings += governmentGrant / 2;
+            else
+                dailyEarnings += 0;
+
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
+
                 enclosurePanel.SetActive(false);
                 endDayButton.enabled = false;
                 dayText.text = d.ToString() + " Day: " + currentDay;
@@ -208,9 +234,23 @@ public class GameManager : MonoBehaviour
                 while (!eventEnd)
                     yield return null;
                 // TODO weekends and people count and spent calculations
+
+                if (d == DAYS.Saturday || d == DAYS.Sunday || d == DAYS.Friday)
+                {
+                    dayModifier = 4;
+                }
+                else if(d == DAYS.Monday || d == DAYS.Tuesday || d == DAYS.Wednesday || d == DAYS.Thursday)
+                {
+                    dayModifier = 2;
+                }
+                peoplePerDay = peoplePerDay * dayModifier * seasonModifier;
+                spentPerPerson = spentPerPerson * seasonModifier;
+
                 
                 while (!dayEnd)
                     yield return null;
+                CalculateMoney();
+                Summary();
                 currentDay++;
                 dayEnd = false;
             }
@@ -285,7 +325,7 @@ public class GameManager : MonoBehaviour
     public void Upgrade(int animal)
     {
         
-        money -= upgradeCost;
+        dailyCosts += upgradeCost;
         animals[animal].CurrentEnclosure++;
 
     }
@@ -295,7 +335,7 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the needs repair bool in animal to true
     public void Repair(int animal)
     {
-        money -= repairCost;
+        dailyCosts += repairCost;
         animals[animal].NeedsRepair = false;
     }
 
@@ -304,10 +344,24 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the injured bool in animal to true
     public void Vet(int animal)
     {
-        money -= vetCost;
+        dailyCosts += vetCost;
         animals[animal].IsInjured = false;
     }
 
+
+    private void CalculateMoney()
+    {
+        foreach (Animal a in animals)
+        {
+            dailyCosts += a.TotalFoodCost;
+        }
+
+        dailyCosts += employeeCosts + overallMaintenanceCost;
+        dailyEarnings += (peoplePerDay * spentPerPerson);
+        money += dailyEarnings;
+        money -= dailyCosts;
+        
+    }
 
     // TODO Summary function
     // Total up the daily costs and display them
@@ -319,7 +373,7 @@ public class GameManager : MonoBehaviour
         foreach (Animal a in animals)
         {
             a.DailyRoutine();
-            money -= a.TotalFoodCost;
+            
 
         }
         statusSummary.text = "Current Money: " + money + " \nOverall Animal Happiness: " + OverallSatisfaction;
