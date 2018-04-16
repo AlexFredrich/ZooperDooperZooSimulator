@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// List of all possible events
     /// </summary>
-    List<IZooEvent> possibleEvents;
+    List<IZooEvent> possibleEvents = new List<IZooEvent>();
     /// <summary>
     /// String to display for summary of injuries
     /// </summary>

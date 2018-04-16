@@ -33,4 +33,4 @@
 0	An anonymous donor has donated $500.	Accept	Decline	3	500	0	
 0	An anonymous donor has donated $50.	Accept	Decline	3	50	0	
 0	An anonymous donor has donated $400.	Accept	Decline	3	400	0	
-0	An anonymous donor has donated $250.	Accept	Decline	3	250	0	
+0	An anonymous donor has donated $250.	Accept	Decline	3	250	0
