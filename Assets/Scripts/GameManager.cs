@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour 
 {
@@ -92,9 +93,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
     [SerializeField]
+    GameObject optionOneButtonVisible, optionTwoButtonVisible, vetButtonVisible, repairButtonVisible, upgradeButtonVisible, endDayButtonVisible;
+    [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
-    GameObject enclosurePanel;
+    GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel;
     [SerializeField]
     int upgradeCost = 150, vetCost = 75, repairCost = 100;
 
@@ -115,6 +118,7 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {        
+        
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
     }
@@ -202,6 +206,10 @@ public class GameManager : MonoBehaviour
      */
      private IEnumerator GameLoop()
     {
+        foreach (Animal a in animals)
+        {
+            a.DailyRoutine();
+        }
         InitializeEvents();
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
@@ -223,9 +231,9 @@ public class GameManager : MonoBehaviour
 
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
-
+                eventPanel.SetActive(true);
                 enclosurePanel.SetActive(false);
-                endDayButton.enabled = false;
+                endDayButtonVisible.SetActive(false);
                 dayText.text = d.ToString() + " Day: " + currentDay;
                 eventSituation.text = possibleEvents[currentDay].DescriptionText;
                 buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
@@ -272,7 +280,8 @@ public class GameManager : MonoBehaviour
     {
         possibleEvents[currentDay].EventAction(choice);
         //TODO response, hide event panel
-        endDayButton.enabled = true;
+        endDayButtonVisible.SetActive(true);
+        eventPanel.SetActive(false);
         eventEnd = true;
     }
 
@@ -280,16 +289,16 @@ public class GameManager : MonoBehaviour
     {
         activeAnimal = animal;
         enclosurePanel.SetActive(true);
-        enclosureText.text = "Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
+        enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
 
         if (animals[activeAnimal].IsInjured == true)
         {
             
-            enclosureText.text = "Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: In need of vet.";
+            enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: In need of vet.";
             // TODO move money condition in here
             if (money >= vetCost)
             {
-                vetButton.enabled = true;
+                vetButtonVisible.SetActive(true);
 
                 // TODO remove these on back button
                 vetButton.onClick.AddListener(delegate { Vet(activeAnimal); });
@@ -297,12 +306,12 @@ public class GameManager : MonoBehaviour
         }
         if(animals[activeAnimal].NeedsRepair == true && money >= repairCost)
         {
-            repairButton.enabled = true;
+            repairButtonVisible.SetActive(true);
             repairButton.onClick.AddListener(delegate { Repair(activeAnimal); });
         }
         if(animals[activeAnimal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
-            upgradeButton.enabled = true;
+            upgradeButtonVisible.SetActive(true);
             upgradeButton.onClick.AddListener(delegate { Upgrade(activeAnimal); });
         }
 
@@ -327,6 +336,7 @@ public class GameManager : MonoBehaviour
         
         dailyCosts += upgradeCost;
         animals[animal].CurrentEnclosure++;
+        upgradeButtonVisible.SetActive(false);
 
     }
 
@@ -337,6 +347,7 @@ public class GameManager : MonoBehaviour
     {
         dailyCosts += repairCost;
         animals[animal].NeedsRepair = false;
+        repairButtonVisible.SetActive(false);
     }
 
 
@@ -346,6 +357,7 @@ public class GameManager : MonoBehaviour
     {
         dailyCosts += vetCost;
         animals[animal].IsInjured = false;
+        vetButtonVisible.SetActive(false);
     }
 
 
@@ -376,7 +388,7 @@ public class GameManager : MonoBehaviour
             
 
         }
-        statusSummary.text = "Current Money: " + money + " \nOverall Animal Happiness: " + OverallSatisfaction;
+        statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + dailyCosts + "\nMoney Earned: " + dailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
         
     }
 
@@ -386,5 +398,27 @@ public class GameManager : MonoBehaviour
     public void EndDay()
     {
         dayEnd = true;
+    }
+
+
+    public void Instructions()
+    {
+        instructionPanel.SetActive(true);
+    }
+
+    public void Continue()
+    {
+        instructionPanel.SetActive(false);
+        exitPanel.SetActive(false);
+    }
+
+    public void Quit()
+    {
+        exitPanel.SetActive(true);
+    }
+
+    public void ExitToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

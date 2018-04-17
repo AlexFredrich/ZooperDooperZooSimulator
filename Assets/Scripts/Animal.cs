@@ -109,8 +109,10 @@ public class Animal : MonoBehaviour
     /// </summary>
     public void DailyRoutine()
     {
+        UpdateEnclosure();
         if (currentEnclosure_UseProperty != ENCLOSURE.None)
         {
+            
             UpdateHappiness();
             CheckInjury();
             CheckMalfunction();
@@ -158,25 +160,25 @@ public class Animal : MonoBehaviour
         {
             case ENCLOSURE.None:
                 {
-                    gameObject.GetComponent<Renderer>().enabled = false;
+                    gameObject.GetComponent<MeshRenderer>().enabled = false;
                     // TODO reset texture
                     break;
                 }
             case ENCLOSURE.Bronze:
                 {
-                    gameObject.GetComponent<Renderer>().enabled = true;
+                    gameObject.GetComponent<MeshRenderer>().enabled = true;
                     // TODO set bronze texture
                     break;
                 }
             case ENCLOSURE.Silver:
                 {
-                    gameObject.GetComponent<Renderer>().enabled = true;
+                    gameObject.GetComponent<MeshRenderer>().enabled = true;
                     // TODO set bronze texture
                     break;
                 }
             case ENCLOSURE.Gold:
                 {
-                    gameObject.GetComponent<Renderer>().enabled = true;
+                    gameObject.GetComponent<MeshRenderer>().enabled = true;
                     // TODO set bronze texture
                     break;
                 }
