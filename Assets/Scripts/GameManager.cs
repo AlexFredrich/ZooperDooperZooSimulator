@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Amount each person spends in a day
     /// </summary>
-    float spentPerPerson = 5f;
+    float spentPerPerson = 4f;
     /// <summary>
     /// The active enclosure
     /// </summary>
@@ -93,13 +93,13 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
     [SerializeField]
-    GameObject optionOneButtonVisible, optionTwoButtonVisible, vetButtonVisible, repairButtonVisible, upgradeButtonVisible, endDayButtonVisible;
+    GameObject  endDayButtonVisible;
     [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
     GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel;
     [SerializeField]
-    int upgradeCost = 150, vetCost = 75, repairCost = 100;
+    int upgradeCost = 1500, vetCost = 2000, repairCost = 1000;
 
 
     private bool dayEnd;
@@ -108,9 +108,11 @@ public class GameManager : MonoBehaviour
     private int dayModifier;
     private float dailyCosts;
 
+    private int eventNumber = 0;
 
-    private int overallMaintenanceCost = 200;
-    private int employeeCosts = 250;
+
+    private int overallMaintenanceCost = 3000;
+    private int employeeCosts = 2000;
 
     private float governmentGrant = 2000;
 
@@ -231,25 +233,42 @@ public class GameManager : MonoBehaviour
 
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
+                dailyCosts = 0;
+                dailyEarnings = 0;
                 eventPanel.SetActive(true);
                 enclosurePanel.SetActive(false);
                 endDayButtonVisible.SetActive(false);
                 dayText.text = d.ToString() + " Day: " + currentDay;
-                eventSituation.text = possibleEvents[currentDay].DescriptionText;
-                buttonOptionOne.text = possibleEvents[currentDay].OptionOne;
-                buttonOptionTwo.text = possibleEvents[currentDay].OptionTwo;
-
+                eventSituation.text = possibleEvents[eventNumber].DescriptionText;
+                buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
+                buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
+                eventNumber++;
                 while (!eventEnd)
                     yield return null;
+                eventEnd = false;
                 // TODO weekends and people count and spent calculations
+                if(d == DAYS.Saturday || d == DAYS.Sunday)
+                {
+                    eventPanel.SetActive(true);
+                    eventSituation.text = possibleEvents[eventNumber].DescriptionText;
+                    buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
+                    buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
+                    eventNumber++;
 
+                    while (!eventEnd)
+                        yield return null;
+
+                }
+                eventEnd = false;
+                endDayButtonVisible.SetActive(true);
+                eventPanel.SetActive(false);
                 if (d == DAYS.Saturday || d == DAYS.Sunday || d == DAYS.Friday)
                 {
-                    dayModifier = 4;
+                    dayModifier = 2;
                 }
                 else if(d == DAYS.Monday || d == DAYS.Tuesday || d == DAYS.Wednesday || d == DAYS.Thursday)
                 {
-                    dayModifier = 2;
+                    dayModifier = 1;
                 }
                 peoplePerDay = peoplePerDay * dayModifier * seasonModifier;
                 spentPerPerson = spentPerPerson * seasonModifier;
@@ -263,7 +282,7 @@ public class GameManager : MonoBehaviour
                 dayEnd = false;
             }
 
-          ;
+          
         }
 
 
@@ -278,15 +297,17 @@ public class GameManager : MonoBehaviour
      */ 
      public void EventResponse(int choice)
     {
-        possibleEvents[currentDay].EventAction(choice);
+        possibleEvents[eventNumber].EventAction(choice);
         //TODO response, hide event panel
-        endDayButtonVisible.SetActive(true);
-        eventPanel.SetActive(false);
+
         eventEnd = true;
     }
 
     public void Enclosure(int animal)
     {
+        repairButton.interactable = false;
+        vetButton.interactable = false;
+        upgradeButton.interactable = false;
         activeAnimal = animal;
         enclosurePanel.SetActive(true);
         enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
@@ -298,7 +319,7 @@ public class GameManager : MonoBehaviour
             // TODO move money condition in here
             if (money >= vetCost)
             {
-                vetButtonVisible.SetActive(true);
+                vetButton.interactable = true;
 
                 // TODO remove these on back button
                 vetButton.onClick.AddListener(delegate { Vet(activeAnimal); });
@@ -306,12 +327,12 @@ public class GameManager : MonoBehaviour
         }
         if(animals[activeAnimal].NeedsRepair == true && money >= repairCost)
         {
-            repairButtonVisible.SetActive(true);
+            repairButton.interactable = true;
             repairButton.onClick.AddListener(delegate { Repair(activeAnimal); });
         }
         if(animals[activeAnimal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
-            upgradeButtonVisible.SetActive(true);
+            upgradeButton.interactable = true; ;
             upgradeButton.onClick.AddListener(delegate { Upgrade(activeAnimal); });
         }
 
@@ -336,7 +357,7 @@ public class GameManager : MonoBehaviour
         
         dailyCosts += upgradeCost;
         animals[animal].CurrentEnclosure++;
-        upgradeButtonVisible.SetActive(false);
+        upgradeButton.interactable = false;
 
     }
 
@@ -347,7 +368,7 @@ public class GameManager : MonoBehaviour
     {
         dailyCosts += repairCost;
         animals[animal].NeedsRepair = false;
-        repairButtonVisible.SetActive(false);
+        repairButton.interactable = false;
     }
 
 
@@ -357,7 +378,7 @@ public class GameManager : MonoBehaviour
     {
         dailyCosts += vetCost;
         animals[animal].IsInjured = false;
-        vetButtonVisible.SetActive(false);
+        vetButton.interactable = false;
     }
 
 
