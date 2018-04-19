@@ -24,7 +24,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Amount each person spends in a day
     /// </summary>
-    float spentPerPerson = 4f;
+    float baseSpentPerPerson = 4f;
+    float spentPerPerson;
     /// <summary>
     /// The active enclosure
     /// </summary>
@@ -36,7 +37,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Number of people visiting in a day
     /// </summary>
-    int peoplePerDay = 250;
+    int basePeoplePerDay = 250;
+    int peoplePerDay;
     /// <summary>
     /// List of all possible events
     /// </summary>
@@ -215,6 +217,8 @@ public class GameManager : MonoBehaviour
         InitializeEvents();
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
+            dailyCosts = 0;
+            dailyEarnings = 0;
             animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
             
             if(i == SEASONS.SUMMER)
@@ -233,8 +237,11 @@ public class GameManager : MonoBehaviour
 
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
-                dailyCosts = 0;
-                dailyEarnings = 0;
+                if (d > 0)
+                {
+                    dailyCosts = 0;
+                    dailyEarnings = 0;
+                }
                 eventPanel.SetActive(true);
                 enclosurePanel.SetActive(false);
                 endDayButtonVisible.SetActive(false);
@@ -242,9 +249,9 @@ public class GameManager : MonoBehaviour
                 eventSituation.text = possibleEvents[eventNumber].DescriptionText;
                 buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
                 buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
-                eventNumber++;
                 while (!eventEnd)
                     yield return null;
+                eventNumber++;
                 eventEnd = false;
                 // TODO weekends and people count and spent calculations
                 if(d == DAYS.Saturday || d == DAYS.Sunday)
@@ -253,11 +260,10 @@ public class GameManager : MonoBehaviour
                     eventSituation.text = possibleEvents[eventNumber].DescriptionText;
                     buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
                     buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
-                    eventNumber++;
 
                     while (!eventEnd)
                         yield return null;
-
+                    eventNumber++;
                 }
                 eventEnd = false;
                 endDayButtonVisible.SetActive(true);
@@ -270,8 +276,8 @@ public class GameManager : MonoBehaviour
                 {
                     dayModifier = 1;
                 }
-                peoplePerDay = peoplePerDay * dayModifier * seasonModifier;
-                spentPerPerson = spentPerPerson * seasonModifier;
+                peoplePerDay = basePeoplePerDay * dayModifier * seasonModifier;
+                spentPerPerson = baseSpentPerPerson * seasonModifier;
 
                 
                 while (!dayEnd)
