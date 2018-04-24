@@ -27,7 +27,7 @@ public class CameraControl : MonoBehaviour {
          
 
         mouseLook.y = Mathf.Clamp(mouseLook.y, 0f, 40f);
-        mouseLook.x = Mathf.Clamp(mouseLook.x, -35f, 35f);
+        mouseLook.x = Mathf.Clamp(mouseLook.x, -45f, 45f);
 
         transform.localRotation = Quaternion.AngleAxis(mouseLook.y, Vector3.right);
         placement.transform.localRotation = Quaternion.AngleAxis(mouseLook.x, placement.transform.up);

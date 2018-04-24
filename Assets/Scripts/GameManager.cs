@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Amount each person spends in a day
     /// </summary>
-    float baseSpentPerPerson = 4f;
+    float baseSpentPerPerson = 5f;
     float spentPerPerson;
     /// <summary>
     /// The active enclosure
@@ -93,13 +93,13 @@ public class GameManager : MonoBehaviour
     }
     //UI Messages
     [SerializeField]
-    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText;
+    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText;
     [SerializeField]
     GameObject  endDayButtonVisible;
     [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
-    GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel;
+    GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel, endPanel, reportPanel;
     [SerializeField]
     int upgradeCost = 1500, vetCost = 2000, repairCost = 1000;
 
@@ -130,6 +130,7 @@ public class GameManager : MonoBehaviour
         
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
+        
     }
 
 
@@ -220,13 +221,15 @@ public class GameManager : MonoBehaviour
             a.DailyRoutine();
         }
         InitializeEvents();
+        
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
             dailyCosts = 0;
             dailyEarnings = 0;
             animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
-            
-            if(i == SEASONS.SUMMER)
+            statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + dailyCosts + "\nMoney Earned: " + dailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
+
+            if (i == SEASONS.SUMMER)
                 seasonModifier = 3;
             else if(i == SEASONS.SPRING || i == SEASONS.FALL)
                 seasonModifier = 2;  
@@ -242,60 +245,77 @@ public class GameManager : MonoBehaviour
 
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
-                if (d > 0)
+                if (money > 0)
                 {
-                    dailyCosts = 0;
-                    dailyEarnings = 0;
-                }
-                eventPanel.SetActive(true);
-                enclosurePanel.SetActive(false);
-                endDayButtonVisible.SetActive(false);
-                dayText.text = d.ToString() + " Day: " + currentDay;
-                eventSituation.text = possibleEvents[eventNumber].DescriptionText;
-                buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
-                buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
-                while (!eventEnd)
-                    yield return null;
-                eventNumber++;
-                eventEnd = false;
-                // TODO weekends and people count and spent calculations
-                if(d == DAYS.Saturday || d == DAYS.Sunday)
-                {
+                    if (d > 0)
+                    {
+                        dailyCosts = 0;
+                        dailyEarnings = 0;
+                    }
                     eventPanel.SetActive(true);
+                    enclosurePanel.SetActive(false);
+                    endDayButtonVisible.SetActive(false);
+                    dayText.text = d.ToString() + " Day: " + currentDay;
                     eventSituation.text = possibleEvents[eventNumber].DescriptionText;
                     buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
                     buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
-
                     while (!eventEnd)
                         yield return null;
                     eventNumber++;
-                }
-                eventEnd = false;
-                endDayButtonVisible.SetActive(true);
-                eventPanel.SetActive(false);
-                if (d == DAYS.Saturday || d == DAYS.Sunday || d == DAYS.Friday)
-                {
-                    dayModifier = 2;
-                }
-                else if(d == DAYS.Monday || d == DAYS.Tuesday || d == DAYS.Wednesday || d == DAYS.Thursday)
-                {
-                    dayModifier = 1;
-                }
-                peoplePerDay = basePeoplePerDay * dayModifier * seasonModifier;
-                spentPerPerson = baseSpentPerPerson * seasonModifier;
+                    eventEnd = false;
+                    // TODO weekends and people count and spent calculations
+                    if (d == DAYS.Saturday || d == DAYS.Sunday)
+                    {
+                        eventPanel.SetActive(true);
+                        eventSituation.text = possibleEvents[eventNumber].DescriptionText;
+                        buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
+                        buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
 
-                
-                while (!dayEnd)
-                    yield return null;
-                CalculateMoney();
-                Summary();
-                currentDay++;
-                dayEnd = false;
+                        while (!eventEnd)
+                            yield return null;
+                        eventNumber++;
+                    }
+                    eventEnd = false;
+                    endDayButtonVisible.SetActive(true);
+                    eventPanel.SetActive(false);
+                    if (d == DAYS.Saturday || d == DAYS.Sunday || d == DAYS.Friday)
+                    {
+                        dayModifier = 4;
+                    }
+                    else if (d == DAYS.Monday || d == DAYS.Tuesday || d == DAYS.Wednesday || d == DAYS.Thursday)
+                    {
+                        dayModifier = 2;
+                    }
+                    peoplePerDay = basePeoplePerDay * dayModifier * seasonModifier;
+                    spentPerPerson = baseSpentPerPerson * seasonModifier;
+
+
+                    while (!dayEnd)
+                        yield return null;
+                    CalculateMoney();
+                    Summary();
+                    currentDay++;
+                    dayEnd = false;
+                }
+                else
+                {
+                    continue;
+                }
             }
 
           
         }
 
+        //End Panel
+        endPanel.SetActive(true);
+        if(money > 0)
+        {
+            endText.text = "Sucess!";
+        }
+        else
+        {
+            endText.text = "Failure";
+        }
 
     }
 
@@ -323,6 +343,8 @@ public class GameManager : MonoBehaviour
         enclosurePanel.SetActive(true);
         enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
 
+        
+
         if (animals[activeAnimal].IsInjured == true)
         {
             
@@ -331,7 +353,7 @@ public class GameManager : MonoBehaviour
             if (money >= vetCost)
             {
                 vetButton.interactable = true;
-
+                
                 // TODO remove these on back button
                 vetButton.onClick.AddListener(delegate { Vet(activeAnimal); });
             }
@@ -339,11 +361,13 @@ public class GameManager : MonoBehaviour
         if(animals[activeAnimal].NeedsRepair == true && money >= repairCost)
         {
             repairButton.interactable = true;
+            
             repairButton.onClick.AddListener(delegate { Repair(activeAnimal); });
         }
         if(animals[activeAnimal].CurrentEnclosure < Animal.ENCLOSURE.Gold && money >= upgradeCost)
         {
-            upgradeButton.interactable = true; ;
+            upgradeButton.interactable = true;
+            
             upgradeButton.onClick.AddListener(delegate { Upgrade(activeAnimal); });
         }
 
@@ -453,4 +477,15 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("Menu");
     }
+
+    public void MoveToResults()
+    {
+        reportPanel.SetActive(true);
+        reportOverallText.text = "The End Results";
+    }
+
+   //public void OnMouseEnter(int animal)
+   // {
+   //     animalEnclosureText.text = "Animal Enclosure: " + animals[animal].Species;
+   // }
 }
