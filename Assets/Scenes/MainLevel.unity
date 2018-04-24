@@ -2273,7 +2273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e77cbfb688898d40ad42f6ca97bef97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 10000
+  money: 100000
   animals:
   - {fileID: 611324329}
   - {fileID: 1703715785}
@@ -2301,9 +2301,12 @@ MonoBehaviour:
   enclosurePanel: {fileID: 2017617717}
   instructionPanel: {fileID: 1270236659}
   exitPanel: {fileID: 1273765018}
-  upgradeCost: 1500
-  vetCost: 2000
-  repairCost: 1000
+  upgradeCost: 10000
+  vetCost: 2500
+  repairCost: 1500
+  overallMaintenanceCost: 12000
+  employeeCosts: 35000
+  utilityCosts: 8000
 --- !u!4 &836127619
 Transform:
   m_ObjectHideFlags: 0

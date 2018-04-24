@@ -112,9 +112,14 @@ public class GameManager : MonoBehaviour
 
     private int eventNumber = 0;
 
-
+    
+    [SerializeField]
     private int overallMaintenanceCost = 3000;
+    [SerializeField]
     private int employeeCosts = 2000;
+    //Will be replaced when temp and weather are incorporated
+    [SerializeField]
+    private int utilityCosts;
 
     private float governmentGrant = 2000;
 
@@ -395,7 +400,7 @@ public class GameManager : MonoBehaviour
             dailyCosts += a.TotalFoodCost;
         }
 
-        dailyCosts += employeeCosts + overallMaintenanceCost;
+        dailyCosts += employeeCosts + overallMaintenanceCost + utilityCosts;
         dailyEarnings += (peoplePerDay * spentPerPerson);
         money += dailyEarnings;
         money -= dailyCosts;
