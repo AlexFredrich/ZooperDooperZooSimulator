@@ -93,13 +93,13 @@ public class GameManager : MonoBehaviour
     }
     //UI Messages
     [SerializeField]
-    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText;
+    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText, seasonalAnimalText;
     [SerializeField]
     GameObject  endDayButtonVisible;
     [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
-    GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel, endPanel, reportPanel;
+    GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel, endPanel, reportPanel, seasonalAnimalPanel;
     [SerializeField]
     int upgradeCost = 1500, vetCost = 2000, repairCost = 1000;
 
@@ -112,7 +112,8 @@ public class GameManager : MonoBehaviour
 
     private int eventNumber = 0;
 
-    
+    private int weatherAffect;
+
     [SerializeField]
     private int overallMaintenanceCost = 3000;
     [SerializeField]
@@ -227,6 +228,8 @@ public class GameManager : MonoBehaviour
             dailyCosts = 0;
             dailyEarnings = 0;
             animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
+            seasonalAnimalPanel.SetActive(true);
+            seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
             statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + dailyCosts + "\nMoney Earned: " + dailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
 
             if (i == SEASONS.SUMMER)
@@ -252,6 +255,7 @@ public class GameManager : MonoBehaviour
                         dailyCosts = 0;
                         dailyEarnings = 0;
                     }
+                    WeatherChooser(i);
                     eventPanel.SetActive(true);
                     enclosurePanel.SetActive(false);
                     endDayButtonVisible.SetActive(false);
@@ -315,6 +319,22 @@ public class GameManager : MonoBehaviour
         else
         {
             endText.text = "Failure";
+        }
+
+    }
+
+    void WeatherChooser(SEASONS s)
+    {
+
+        if(s == SEASONS.SPRING || s == SEASONS.SUMMER || s == SEASONS.FALL)
+        {
+            int r = Random.Range(0, 2);
+            
+        }
+        else
+        {
+            int r = Random.Range(0, 3);
+
         }
 
     }
@@ -466,6 +486,7 @@ public class GameManager : MonoBehaviour
     {
         instructionPanel.SetActive(false);
         exitPanel.SetActive(false);
+        
     }
 
     public void Quit()
@@ -484,8 +505,8 @@ public class GameManager : MonoBehaviour
         reportOverallText.text = "The End Results";
     }
 
-   //public void OnMouseEnter(int animal)
-   // {
-   //     animalEnclosureText.text = "Animal Enclosure: " + animals[animal].Species;
-   // }
+    public void SeasonalContinue()
+    {
+        seasonalAnimalPanel.SetActive(false);
+    }
 }
