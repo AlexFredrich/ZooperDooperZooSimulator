@@ -186,17 +186,13 @@ public class GameManager : MonoBehaviour
         AnimalHappinessModifier = 1f;
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
-        string temp = "1, -1, -47";
-        var test = temp.Split(',');
-        foreach (string s in test)
-            Debug.Log(s.Trim());
     }
 
 
     void InitializeEvents()
     {
         // Split the file up by line
-        var eventContent = eventFile.text.Split('\n');
+        var eventContent = System.Text.Encoding.Default.GetString(eventFile.bytes).Split('\n');
         // Run through each line individually
         foreach (string s in eventContent)
         {

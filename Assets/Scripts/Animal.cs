@@ -160,25 +160,33 @@ public class Animal : MonoBehaviour
         {
             case ENCLOSURE.None:
                 {
-                    gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+                    foreach (MeshRenderer r in renderers)
+                        r.enabled = false;
                     // TODO reset texture
                     break;
                 }
             case ENCLOSURE.Bronze:
                 {
-                    gameObject.GetComponent<MeshRenderer>().enabled = true;
+                    MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+                    foreach (MeshRenderer r in renderers)
+                        r.enabled = true;
                     // TODO set bronze texture
                     break;
                 }
             case ENCLOSURE.Silver:
                 {
-                    gameObject.GetComponent<MeshRenderer>().enabled = true;
+                    MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+                    foreach (MeshRenderer r in renderers)
+                        r.enabled = true;
                     // TODO set bronze texture
                     break;
                 }
             case ENCLOSURE.Gold:
                 {
-                    gameObject.GetComponent<MeshRenderer>().enabled = true;
+                    MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+                    foreach (MeshRenderer r in renderers)
+                        r.enabled = true;
                     // TODO set bronze texture
                     break;
                 }
