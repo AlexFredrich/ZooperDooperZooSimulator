@@ -133,13 +133,13 @@ public class Animal : MonoBehaviour
     {
         // If there isn't a problem, use the happiness modifier
         if (!IsInjured && !NeedsRepair)
-            Happiness *= enclosureHappinessModifiers[(int)CurrentEnclosure];
+            Happiness *= enclosureHappinessModifiers[(int)CurrentEnclosure] * FindObjectOfType<GameManager>().AnimalHappinessModifier;
         // If there's an injury, cut that by 25% (generously)
         else if (IsInjured && !NeedsRepair)
-            Happiness *= .75f * enclosureHappinessModifiers[(int)CurrentEnclosure];
+            Happiness *= .75f * enclosureHappinessModifiers[(int)CurrentEnclosure] * FindObjectOfType<GameManager>().AnimalHappinessModifier;
         // If the enclosure is broken, ditch the happiness modifier
         if (NeedsRepair)
-            Happiness *= .75f;
+            Happiness *= .75f * FindObjectOfType<GameManager>().AnimalHappinessModifier;
     }
 
     private void CheckMalfunction()

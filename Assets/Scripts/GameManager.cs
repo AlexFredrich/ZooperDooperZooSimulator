@@ -24,8 +24,9 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Amount each person spends in a day
     /// </summary>
-    float baseSpentPerPerson = 5f;
+    float baseSpentPerPerson_UseProperty = 5f;
     float spentPerPerson;
+    float spentPerPersonDeviation;
     /// <summary>
     /// The active enclosure
     /// </summary>
@@ -37,12 +38,12 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Number of people visiting in a day
     /// </summary>
-    int basePeoplePerDay = 250;
+    int basePeoplePerDay_UseProperty = 250;
     int peoplePerDay;
     /// <summary>
     /// List of all possible events
     /// </summary>
-    List<IZooEvent> possibleEvents = new List<IZooEvent>();
+    List<ZooEvent> possibleEvents = new List<ZooEvent>();
     /// <summary>
     /// String to display for summary of injuries
     /// </summary>
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [Tooltip("Player's money.")]
     [SerializeField]
-    public float money = 10000;
+    float money = 10000;
     /// <summary>
     /// List of animals in the game
     /// </summary>
@@ -84,13 +85,65 @@ public class GameManager : MonoBehaviour
             int activeAnimals = 0;
             foreach (Animal a in animals)
             {
-                result += a.Happiness;
                 if (a.CurrentEnclosure != Animal.ENCLOSURE.None)
+                {
                     activeAnimals++;
+                    result += a.Happiness;
+                }
             }
             return result / activeAnimals;
         }
     }
+    public float DailyEarnings
+    {
+        get
+        {
+            return dailyEarnings_UseProperty;
+        }
+        set
+        {
+            dailyEarnings_UseProperty = value;
+        }
+    }
+
+    public float DailyCosts
+    {
+        get
+        {
+            return dailyCosts_UseProperty;
+        }
+        set
+        {
+            dailyCosts_UseProperty = value;
+        }
+    }
+
+    public int BasePeoplePerDay
+    {
+        get
+        {
+            return basePeoplePerDay_UseProperty;
+        }
+        set
+        {
+            basePeoplePerDay_UseProperty = value;
+        }
+    }
+
+    public float BaseSpentPerPerson
+    {
+        get
+        {
+            return baseSpentPerPerson_UseProperty;
+        }
+        set
+        {
+            baseSpentPerPerson_UseProperty = value;
+        }
+    }
+
+    public float AnimalHappinessModifier { get; set; }
+
     //UI Messages
     [SerializeField]
     Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText, seasonalAnimalText;
@@ -108,7 +161,7 @@ public class GameManager : MonoBehaviour
     private bool eventEnd;
     private int seasonModifier;
     private int dayModifier;
-    private float dailyCosts;
+    private float dailyCosts_UseProperty;
 
     private int eventNumber = 0;
 
@@ -124,14 +177,19 @@ public class GameManager : MonoBehaviour
 
     private float governmentGrant = 2000;
 
-    private float dailyEarnings;
+    private float dailyEarnings_UseProperty;
+
+    
 	// Use this for initialization
 	void Start ()
-    {        
-        
+    {
+        AnimalHappinessModifier = 1f;
         // TODO Start Game Loop	
         StartCoroutine(GameLoop());
-        
+        string temp = "1, -1, -47";
+        var test = temp.Split(',');
+        foreach (string s in test)
+            Debug.Log(s.Trim());
     }
 
 
@@ -143,56 +201,60 @@ public class GameManager : MonoBehaviour
         foreach (string s in eventContent)
         {
             // Declare variables to use for results
-            int season = -1, resultOne = -1, resultTwo = -1, eventType = -1, animal = -1, tem = -1;
+            int season = -1, resultOneType = -1, resultTwoType = -1, tem = -1;
+            float resultOneValue = -1f, resultTwoValue = -1f, floatem = -1f;
             Debug.Log(s);
             // Split the line by tabs (so I can use commas in the event descriptions)
             var individualEventContent = s.Split('\t');
             // Declare an event of some variety so it doesn't freak out over the next part
-            IZooEvent tempEvent = null;
-            // Determine what type of event it is
-            // 0 - Money Event
-            // 1 - Animal Event
-            if (int.TryParse(individualEventContent[0], out tem))
-                eventType = tem;
-            tem = -1;
-            // Initialize an event of the proper type
-            switch(eventType)
-            {
-                // Initialize a Money Event
-                case 0:
-                    tempEvent = new MoneyEvent();
-                    break;
-                // Initialize an Animal Event with animal type
-                case 1:
-                    if (int.TryParse(individualEventContent[7], out tem))
-                        animal = tem;
-                    tempEvent = new AnimalEvent(animal);
-                    tem = -1;
-                    break;
-                default:
-                    break;
-            }
+            ZooEvent tempEvent = new ZooEvent();
             // Separate out description text
-            tempEvent.DescriptionText = individualEventContent[1];
+            tempEvent.DescriptionText = individualEventContent[0];
             // And option 1
-            tempEvent.OptionOne = individualEventContent[2];
+            tempEvent.OptionOne = individualEventContent[1];
             // ...and option 2
-            tempEvent.OptionTwo = individualEventContent[3];
+            tempEvent.OptionTwo = individualEventContent[2];
             // Get the season of the event
-            if (int.TryParse(individualEventContent[4], out tem))
+            if (int.TryParse(individualEventContent[3], out tem))
                 season = tem;
             tempEvent.Season = (SEASONS)season;
             tem = -1;
-            // Get the first result
-            if (int.TryParse(individualEventContent[5], out tem))
-                resultOne = tem;
-            tempEvent.ResultOne = resultOne;
-            tem = -1;
-            // ...and the second
-            if (int.TryParse(individualEventContent[6], out tem))
-                resultTwo = tem;
-            tempEvent.ResultTwo = resultTwo;
-            tem = -1;
+            // Get the types of result 1
+            var tempString = individualEventContent[4].Split(',');
+            foreach (string t in tempString)
+            {
+                if (int.TryParse(t.Trim(), out tem))
+                    resultOneType = tem;
+                tempEvent.AddToList(0, resultOneType);
+                tem = -1;
+            }
+            // Get the values of result 1
+            tempString = individualEventContent[5].Split(',');
+            foreach (string t in tempString)
+            {
+                if (float.TryParse(t.Trim(), out floatem))
+                    resultOneValue = floatem;
+                tempEvent.AddToList(1, resultOneValue);
+                floatem = -1f;
+            }
+            // Get the types of result 2
+            tempString = individualEventContent[6].Split(',');
+            foreach (string t in tempString)
+            {
+                if (int.TryParse(t.Trim(), out tem))
+                    resultTwoType = tem;
+                tempEvent.AddToList(2, resultTwoType);
+                tem = -1;
+            }
+            // Get the values of result 2
+            tempString = individualEventContent[7].Split(',');
+            foreach (string t in tempString)
+            {
+                if (float.TryParse(t.Trim(), out floatem))
+                    resultTwoValue = floatem;
+                tempEvent.AddToList(3, resultTwoValue);
+                floatem = -1f;
+            }
             possibleEvents.Add(tempEvent);
         }
     }
@@ -225,12 +287,12 @@ public class GameManager : MonoBehaviour
         
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
-            dailyCosts = 0;
-            dailyEarnings = 0;
+            DailyCosts = 0;
+            DailyEarnings = 0;
             animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
             seasonalAnimalPanel.SetActive(true);
             seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
-            statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + dailyCosts + "\nMoney Earned: " + dailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
+            statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + DailyCosts + "\nMoney Earned: " + DailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
 
             if (i == SEASONS.SUMMER)
                 seasonModifier = 3;
@@ -240,11 +302,11 @@ public class GameManager : MonoBehaviour
                 seasonModifier = 1;
 
             if (OverallSatisfaction >= .75)
-                dailyEarnings += governmentGrant;
+                DailyEarnings += governmentGrant;
             else if (OverallSatisfaction >= .5 && OverallSatisfaction <= .75)
-                dailyEarnings += governmentGrant / 2;
+                DailyEarnings += governmentGrant / 2;
             else
-                dailyEarnings += 0;
+                DailyEarnings += 0;
 
             for(DAYS d = 0; d <= DAYS.Sunday; d++)
             {
@@ -252,9 +314,10 @@ public class GameManager : MonoBehaviour
                 {
                     if (d > 0)
                     {
-                        dailyCosts = 0;
-                        dailyEarnings = 0;
+                        DailyCosts = 0;
+                        DailyEarnings = 0;
                     }
+                    spentPerPersonDeviation = BaseSpentPerPerson / 6f;
                     WeatherChooser(i);
                     eventPanel.SetActive(true);
                     enclosurePanel.SetActive(false);
@@ -290,8 +353,8 @@ public class GameManager : MonoBehaviour
                     {
                         dayModifier = 2;
                     }
-                    peoplePerDay = basePeoplePerDay * dayModifier * seasonModifier;
-                    spentPerPerson = baseSpentPerPerson * seasonModifier;
+                    peoplePerDay = BasePeoplePerDay * dayModifier * seasonModifier;
+                    spentPerPerson = BaseSpentPerPerson * GenerateNormal() * seasonModifier;
 
 
                     while (!dayEnd)
@@ -321,6 +384,29 @@ public class GameManager : MonoBehaviour
             endText.text = "Failure";
         }
 
+    }
+
+    /// <summary>
+    /// Approximate a clamped normal distribution
+    /// </summary>
+    /// <returns>Returns the calculated sample multiplied by the standard deviation</returns>
+    private float GenerateNormal()
+    {
+        int rand = Random.Range(0, 40);
+        float sd = 0f;
+        if (rand == 0)
+            sd = Random.Range(-3f, -2f);
+        else if (rand <= 5)
+            sd = Random.Range(-2f, -1f);
+        else if (rand <= 19)
+            sd = Random.Range(-1f, 0f);
+        else if (rand <= 33)
+            sd = Random.Range(0f, 1f);
+        else if (rand <= 38)
+            sd = Random.Range(1f, 2f);
+        else
+            sd = Random.Range(2f, 3f);
+        return spentPerPersonDeviation * sd;
     }
 
     void WeatherChooser(SEASONS s)
@@ -410,7 +496,7 @@ public class GameManager : MonoBehaviour
     public void Upgrade(int animal)
     {
         
-        dailyCosts += upgradeCost;
+        DailyCosts += upgradeCost;
         animals[animal].CurrentEnclosure++;
         upgradeButton.interactable = false;
 
@@ -421,7 +507,7 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the needs repair bool in animal to true
     public void Repair(int animal)
     {
-        dailyCosts += repairCost;
+        DailyCosts += repairCost;
         animals[animal].NeedsRepair = false;
         repairButton.interactable = false;
     }
@@ -431,7 +517,7 @@ public class GameManager : MonoBehaviour
     // Add the cost to the daily cost and set the injured bool in animal to true
     public void Vet(int animal)
     {
-        dailyCosts += vetCost;
+        DailyCosts += vetCost;
         animals[animal].IsInjured = false;
         vetButton.interactable = false;
     }
@@ -441,13 +527,13 @@ public class GameManager : MonoBehaviour
     {
         foreach (Animal a in animals)
         {
-            dailyCosts += a.TotalFoodCost;
+            DailyCosts += a.TotalFoodCost;
         }
 
-        dailyCosts += employeeCosts + overallMaintenanceCost + utilityCosts;
-        dailyEarnings += (peoplePerDay * spentPerPerson);
-        money += dailyEarnings;
-        money -= dailyCosts;
+        DailyCosts += employeeCosts + overallMaintenanceCost + utilityCosts;
+        DailyEarnings += (peoplePerDay * spentPerPerson);
+        money += DailyEarnings;
+        money -= DailyCosts;
         
     }
 
@@ -464,7 +550,7 @@ public class GameManager : MonoBehaviour
             
 
         }
-        statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + dailyCosts + "\nMoney Earned: " + dailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
+        statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + DailyCosts + "\nMoney Earned: " + DailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
         
     }
 
