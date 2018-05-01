@@ -354,7 +354,7 @@ public class GameManager : MonoBehaviour
                         dayModifier = 2;
                     }
                     peoplePerDay = BasePeoplePerDay * dayModifier * seasonModifier;
-                    spentPerPerson = BaseSpentPerPerson * GenerateNormal() * seasonModifier;
+                    spentPerPerson = (BaseSpentPerPerson + GenerateNormal()) * seasonModifier;
 
 
                     while (!dayEnd)
