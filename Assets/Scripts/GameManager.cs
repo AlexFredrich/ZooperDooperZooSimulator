@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {
     // Public Fields
     /// <summary>
     /// The days of the week, used to determine weekends and display current day
     /// </summary>
-    public enum DAYS { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };    
+    public enum DAYS { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
     /// <summary>
     /// The seasons, used for events and the like
     /// </summary>
@@ -146,40 +146,47 @@ public class GameManager : MonoBehaviour
 
     //UI Messages
     [SerializeField]
-    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText, seasonalAnimalText;
+    Text eventSituation, buttonOptionOne, buttonOptionTwo, dayText, temperatureText, statusSummary, enclosureText, animalEnclosureText, endText, reportOverallText, seasonalAnimalText;
     [SerializeField]
-    GameObject  endDayButtonVisible;
+    GameObject endDayButtonVisible;
     [SerializeField]
     Button optionOneButton, optionTwoButton, vetButton, repairButton, upgradeButton, endDayButton;
     [SerializeField]
     GameObject eventPanel, enclosurePanel, instructionPanel, exitPanel, endPanel, reportPanel, seasonalAnimalPanel;
+    [SerializeField]
+    private Image seasonImage, weatherImage;
+    [SerializeField]
+    private Sprite[] seasonSprites;
+    [SerializeField]
+    private Sprite[] weatherSprites;
     [SerializeField]
     int upgradeCost = 1500, vetCost = 2000, repairCost = 1000;
 
 
     private bool dayEnd;
     private bool eventEnd;
-    private int seasonModifier;
-    private int dayModifier;
+    private float seasonModifier;
+    private float dayModifier;
     private float dailyCosts_UseProperty;
 
     private int eventNumber = 0;
-
-    private int weatherAffect;
 
     [SerializeField]
     private int overallMaintenanceCost = 3000;
     [SerializeField]
     private int employeeCosts = 2000;
     //Will be replaced when temp and weather are incorporated
-    [SerializeField]
-    private int utilityCosts;
+    //[SerializeField]
+    //private int utilityCosts;
 
     private float governmentGrant = 2000;
 
     private float dailyEarnings_UseProperty;
 
-    
+    private WEATHER CurrentDayWeather;
+    private float weatherModifier;
+
+    public int currentDayTemperature;
 	// Use this for initialization
 	void Start ()
     {
@@ -285,9 +292,12 @@ public class GameManager : MonoBehaviour
         {
             DailyCosts = 0;
             DailyEarnings = 0;
-            animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
-            seasonalAnimalPanel.SetActive(true);
-            seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
+            if (money > 0)
+            {
+                animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
+                seasonalAnimalPanel.SetActive(true);
+                seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
+            }
             statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + DailyCosts + "\nMoney Earned: " + DailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
 
             if (i == SEASONS.SUMMER)
@@ -315,10 +325,12 @@ public class GameManager : MonoBehaviour
                     }
                     spentPerPersonDeviation = BaseSpentPerPerson / 6f;
                     WeatherChooser(i);
+                    TemperatureGenerator(i);
                     eventPanel.SetActive(true);
                     enclosurePanel.SetActive(false);
                     endDayButtonVisible.SetActive(false);
                     dayText.text = d.ToString() + " Day: " + currentDay;
+                    temperatureText.text = currentDayTemperature.ToString() + "°F";
                     eventSituation.text = possibleEvents[eventNumber].DescriptionText;
                     buttonOptionOne.text = possibleEvents[eventNumber].OptionOne;
                     buttonOptionTwo.text = possibleEvents[eventNumber].OptionTwo;
@@ -349,7 +361,7 @@ public class GameManager : MonoBehaviour
                     {
                         dayModifier = 2;
                     }
-                    peoplePerDay = BasePeoplePerDay * dayModifier * seasonModifier;
+                    peoplePerDay = Mathf.RoundToInt(BasePeoplePerDay * dayModifier * seasonModifier * weatherModifier);
                     spentPerPerson = (BaseSpentPerPerson + GenerateNormal()) * seasonModifier;
 
 
@@ -411,16 +423,84 @@ public class GameManager : MonoBehaviour
         if(s == SEASONS.SPRING || s == SEASONS.SUMMER || s == SEASONS.FALL)
         {
             int r = Random.Range(0, 2);
+
+            switch(r)
+            {
+                case 0:
+                    CurrentDayWeather = WEATHER.Sunny;
+                    weatherModifier = 1.5f;
+                    break;
+                case 1:
+                    CurrentDayWeather = WEATHER.Rainy;
+                    weatherModifier = .8f;
+                    break;
+                case 2:
+                    CurrentDayWeather = WEATHER.Windy;
+                    weatherModifier = 1.2f;
+                    break;
+                default:
+                    CurrentDayWeather = WEATHER.Sunny;
+                    weatherModifier = 1.5f;
+                    break;
+            }
             
         }
         else
         {
             int r = Random.Range(0, 3);
 
+            switch (r)
+            {
+                case 0:
+                    CurrentDayWeather = WEATHER.Sunny;
+                    weatherModifier = 1.5f;
+                    break;
+                case 1:
+                    CurrentDayWeather = WEATHER.Rainy;
+                    weatherModifier = .8f;
+                    break;
+                case 2:
+                    CurrentDayWeather = WEATHER.Windy;
+                    weatherModifier = 1.2f;
+                    break;
+                case 3:
+                    CurrentDayWeather = WEATHER.Snowy;
+                    weatherModifier = .6f;
+                    break;
+                default:
+                    CurrentDayWeather = WEATHER.Snowy;
+                    weatherModifier = .6f;
+                    break;
+            }
         }
 
     }
 
+    void TemperatureGenerator(SEASONS s)
+    {
+        int r;
+        if(s == SEASONS.SPRING)
+        {
+            r = Random.Range(31, 70);
+            currentDayTemperature = r;
+        }
+        else if(s == SEASONS.SUMMER)
+        {
+            r = Random.Range(62, 84);
+            currentDayTemperature = r;
+        }
+        else if(s == SEASONS.FALL)
+        {
+            r = Random.Range(35, 75);
+            currentDayTemperature = r;
+        }
+        else if(s == SEASONS.WINTER)
+        {
+            r = Random.Range(18, 49);
+            currentDayTemperature = r;
+        }
+
+    }
 
     // TODO Event Response button function
     /*
@@ -523,10 +603,12 @@ public class GameManager : MonoBehaviour
     {
         foreach (Animal a in animals)
         {
+            a.UpdateMaintenanceCost(currentDayTemperature);
+            DailyCosts += a.MaintenanceCost;
             DailyCosts += a.TotalFoodCost;
         }
 
-        DailyCosts += employeeCosts + overallMaintenanceCost + utilityCosts;
+        DailyCosts += employeeCosts + overallMaintenanceCost;
         DailyEarnings += (peoplePerDay * spentPerPerson);
         money += DailyEarnings;
         money -= DailyCosts;

@@ -67,6 +67,20 @@ public class Animal : MonoBehaviour
     /// The type of animal (lion, penguin, etc.)
     /// </summary>
     public string Species { get { return species_UseProperty; } }
+    /// <summary>
+    /// The calculation for animal enclosure maintenance
+    /// </summary>
+    public float MaintenanceCost
+    {
+        get
+        {
+            return maintenanceCost_UseProperty;
+        }
+        set
+        {
+            maintenanceCost_UseProperty = value;
+        }
+    }
 
     // SerializeFields
     [Tooltip("The cost of food per animal per day.")]
@@ -84,6 +98,12 @@ public class Animal : MonoBehaviour
     [Tooltip("Breakdown chance for each enclosure level (starting at none)")]
     [SerializeField]
     List<float> enclosureBreakChance;
+    [Tooltip("The general cost of maintence for this animal's enclosure")]
+    [SerializeField]
+    float maintenanceCost_UseProperty;
+    [Tooltip("The temperature ranges where animals need extra heating or air conditioning(first is low temp, second is high temp)")]
+    [SerializeField]
+    List<int> temperatureRange;
 
     // Fields
     /// <summary>
@@ -127,6 +147,15 @@ public class Animal : MonoBehaviour
             if (random > Happiness)
                 IsInjured = true;
         }
+    }
+
+    public void UpdateMaintenanceCost(int temperature)
+    {
+        if(temperature < temperatureRange[0] && temperature > temperatureRange[1])
+        {
+            MaintenanceCost += 100;
+        }
+
     }
 
     private void UpdateHappiness()
