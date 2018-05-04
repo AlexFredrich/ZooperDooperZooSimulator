@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Animal : MonoBehaviour 
 {
@@ -104,6 +105,9 @@ public class Animal : MonoBehaviour
     [Tooltip("The temperature ranges where animals need extra heating or air conditioning(first is low temp, second is high temp)")]
     [SerializeField]
     List<int> temperatureRange;
+    [Tooltip("The button attached to the enclosure.")]
+    [SerializeField]
+    Button button;
 
     // Fields
     /// <summary>
@@ -192,6 +196,7 @@ public class Animal : MonoBehaviour
                     MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
                     foreach (MeshRenderer r in renderers)
                         r.enabled = false;
+                    button.interactable = false;
                     // TODO reset texture
                     break;
                 }
@@ -200,6 +205,7 @@ public class Animal : MonoBehaviour
                     MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
                     foreach (MeshRenderer r in renderers)
                         r.enabled = true;
+                    button.interactable = true;
                     // TODO set bronze texture
                     break;
                 }
@@ -208,6 +214,7 @@ public class Animal : MonoBehaviour
                     MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
                     foreach (MeshRenderer r in renderers)
                         r.enabled = true;
+                    button.interactable = true;
                     // TODO set bronze texture
                     break;
                 }
@@ -216,6 +223,7 @@ public class Animal : MonoBehaviour
                     MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
                     foreach (MeshRenderer r in renderers)
                         r.enabled = true;
+                    button.interactable = true;
                     // TODO set bronze texture
                     break;
                 }

@@ -167,7 +167,7 @@ public class GameManager : MonoBehaviour
     private bool eventEnd;
     private float seasonModifier;
     private float dayModifier;
-    private float dailyCosts_UseProperty;
+    private float dailyCosts_UseProperty = 0;
 
     private int eventNumber = 0;
 
@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
 
     private float governmentGrant = 2000;
 
-    private float dailyEarnings_UseProperty;
+    private float dailyEarnings_UseProperty = 0;
 
     private WEATHER CurrentDayWeather;
     private float weatherModifier;
@@ -206,7 +206,6 @@ public class GameManager : MonoBehaviour
             // Declare variables to use for results
             int season = -1, resultOneType = -1, resultTwoType = -1, tem = -1;
             float resultOneValue = -1f, resultTwoValue = -1f, floatem = -1f;
-            Debug.Log(s);
             // Split the line by tabs (so I can use commas in the event descriptions)
             var individualEventContent = s.Split('\t');
             // Declare an event of some variety so it doesn't freak out over the next part
@@ -290,15 +289,14 @@ public class GameManager : MonoBehaviour
         
         for(SEASONS i = 0; i <= SEASONS.WINTER; i++)
         {
-            DailyCosts = 0;
-            DailyEarnings = 0;
             if (money > 0)
             {
                 animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
                 seasonalAnimalPanel.SetActive(true);
                 seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
             }
-            statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + DailyCosts + "\nMoney Earned: " + DailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
+            statusSummary.text = "Current Money:\n$" + money + "\nMoney Spent:\n$" + DailyCosts + "\nMoney Earned:\n$" + DailyEarnings 
+                + "\nOverall Animal Happiness:\n" + System.Math.Round(OverallSatisfaction * 100, 2) + "%";
 
             if (i == SEASONS.SUMMER)
                 seasonModifier = 3;
@@ -318,11 +316,8 @@ public class GameManager : MonoBehaviour
             {
                 if (money > 0)
                 {
-                    if (d > 0)
-                    {
-                        DailyCosts = 0;
-                        DailyEarnings = 0;
-                    }
+                    DailyCosts = 0;
+                    DailyEarnings = 0;
                     spentPerPersonDeviation = BaseSpentPerPerson / 6f;
                     WeatherChooser(i);
                     TemperatureGenerator(i);
@@ -523,14 +518,16 @@ public class GameManager : MonoBehaviour
         upgradeButton.interactable = false;
         activeAnimal = animal;
         enclosurePanel.SetActive(true);
-        enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: Healthy.";
+        enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + 
+            System.Math.Round(animals[activeAnimal].Happiness * 100, 2) + "% Animal Health: Healthy.";
 
         
 
         if (animals[activeAnimal].IsInjured == true)
         {
             
-            enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + animals[activeAnimal].Happiness + " Animal Health: In need of vet.";
+            enclosureText.text = "Enclosure: " + animals[activeAnimal].Species + " Animal Happiness: " + 
+                System.Math.Round(animals[activeAnimal].Happiness * 100, 2) + "% Animal Health: In need of vet.";
             // TODO move money condition in here
             if (money >= vetCost)
             {
@@ -628,7 +625,8 @@ public class GameManager : MonoBehaviour
             
 
         }
-        statusSummary.text = "Current Money: " + money + "\nMoney Spent: " + DailyCosts + "\nMoney Earned: " + DailyEarnings + "\nOverall Animal Happiness: " + OverallSatisfaction;
+        statusSummary.text = "Current Money:\n$" + money + "\nMoney Spent:\n$" + DailyCosts + "\nMoney Earned:\n$" + DailyEarnings 
+            + "\nOverall Animal Happiness:\n" + System.Math.Round(OverallSatisfaction * 100, 2) + "%";
         
     }
 
