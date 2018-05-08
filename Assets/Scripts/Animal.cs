@@ -71,17 +71,7 @@ public class Animal : MonoBehaviour
     /// <summary>
     /// The calculation for animal enclosure maintenance
     /// </summary>
-    public float MaintenanceCost
-    {
-        get
-        {
-            return maintenanceCost_UseProperty;
-        }
-        set
-        {
-            maintenanceCost_UseProperty = value;
-        }
-    }
+    public float MaintenanceCost { get; set; }
 
     // SerializeFields
     [Tooltip("The cost of food per animal per day.")]
@@ -101,7 +91,7 @@ public class Animal : MonoBehaviour
     List<float> enclosureBreakChance;
     [Tooltip("The general cost of maintence for this animal's enclosure")]
     [SerializeField]
-    float maintenanceCost_UseProperty;
+    float baseMaintenanceCost;
     [Tooltip("The temperature ranges where animals need extra heating or air conditioning(first is low temp, second is high temp)")]
     [SerializeField]
     List<int> temperatureRange;
@@ -155,11 +145,12 @@ public class Animal : MonoBehaviour
 
     public void UpdateMaintenanceCost(int temperature)
     {
-        if(temperature < temperatureRange[0] && temperature > temperatureRange[1])
+        if (temperature < temperatureRange[0] || temperature > temperatureRange[1])
         {
             MaintenanceCost += 100;
         }
-
+        else
+            MaintenanceCost = baseMaintenanceCost;
     }
 
     private void UpdateHappiness()
@@ -169,10 +160,10 @@ public class Animal : MonoBehaviour
             Happiness *= enclosureHappinessModifiers[(int)CurrentEnclosure] * FindObjectOfType<GameManager>().AnimalHappinessModifier;
         // If there's an injury, cut that by 25% (generously)
         else if (IsInjured && !NeedsRepair)
-            Happiness *= .75f * enclosureHappinessModifiers[(int)CurrentEnclosure] * FindObjectOfType<GameManager>().AnimalHappinessModifier;
+            Happiness *= .9f * enclosureHappinessModifiers[(int)CurrentEnclosure] * FindObjectOfType<GameManager>().AnimalHappinessModifier;
         // If the enclosure is broken, ditch the happiness modifier
         if (NeedsRepair)
-            Happiness *= .75f * FindObjectOfType<GameManager>().AnimalHappinessModifier;
+            Happiness *= .9f * FindObjectOfType<GameManager>().AnimalHappinessModifier;
     }
 
     private void CheckMalfunction()
@@ -180,7 +171,7 @@ public class Animal : MonoBehaviour
         if(!NeedsRepair)
         {
             float random = Random.Range(.01f, 1f);
-            if (random > enclosureBreakChance[(int)CurrentEnclosure])
+            if (random < enclosureBreakChance[(int)CurrentEnclosure])
                 NeedsRepair = true;
         }
     }

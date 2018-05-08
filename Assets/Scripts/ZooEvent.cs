@@ -95,7 +95,8 @@ public class ZooEvent : MonoBehaviour
                         break;
                     // Special events for assessment
                     case 5:
-                        //TODO incorporate assessment better
+                        if (resultOneValues[i] == 1)
+                            gm.QuestionAnswered((int)Season - 1);
                         break;
                 }
             }
@@ -134,7 +135,8 @@ public class ZooEvent : MonoBehaviour
                         break;
                     // Special events for assessment
                     case 5:
-                        //TODO incorporate assessment better
+                        if (resultTwoValues[i] == 1)
+                            gm.QuestionAnswered((int)Season - 1);
                         break;
                 }
             }

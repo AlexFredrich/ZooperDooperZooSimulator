@@ -72,6 +72,18 @@ public class GameManager : MonoBehaviour
     [Tooltip("Text file to define events.")]
     [SerializeField]
     TextAsset eventFile;
+    [Tooltip("Ending Title Strings")]
+    [SerializeField]
+    List<string> endingTitles;
+    [Tooltip("Ending sentences")]
+    [SerializeField]
+    List<string> endingSentences;
+    [Tooltip("Rating Slider")]
+    [SerializeField]
+    Slider ratingSlider;
+    [Tooltip("Rating text.")]
+    [SerializeField]
+    Text ratingText;
 
     // Properties
     /// <summary>
@@ -160,16 +172,20 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Sprite[] weatherSprites;
     [SerializeField]
+    private ParticleSystem[] weatherParticles;
+    [SerializeField]
     int upgradeCost = 1500, vetCost = 2000, repairCost = 1000;
 
 
     private bool dayEnd;
     private bool eventEnd;
+    bool[] questionsCorrect = new bool[3];
     private float seasonModifier;
     private float dayModifier;
     private float dailyCosts_UseProperty = 0;
 
     private int eventNumber = 0;
+    int numQuestionsRight;
 
     [SerializeField]
     private int overallMaintenanceCost = 3000;
@@ -293,15 +309,19 @@ public class GameManager : MonoBehaviour
             {
                 animals[(int)i + 4].CurrentEnclosure = Animal.ENCLOSURE.Bronze;
                 seasonalAnimalPanel.SetActive(true);
-                seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
+                if ((int)i != 2)
+                    seasonalAnimalText.text = animals[(int)i + 4].Species + "s";
+                else
+                    seasonalAnimalText.text = "Wolves";
             }
             statusSummary.text = "Current Money:\n$" + money + "\nMoney Spent:\n$" + DailyCosts + "\nMoney Earned:\n$" + DailyEarnings 
                 + "\nOverall Animal Happiness:\n" + System.Math.Round(OverallSatisfaction * 100, 2) + "%";
+            seasonImage.sprite = seasonSprites[(int)i];
 
             if (i == SEASONS.SUMMER)
-                seasonModifier = 3;
+                seasonModifier = 2;
             else if(i == SEASONS.SPRING || i == SEASONS.FALL)
-                seasonModifier = 2;  
+                seasonModifier = 1.5f;  
             else
                 seasonModifier = 1;
 
@@ -316,6 +336,9 @@ public class GameManager : MonoBehaviour
             {
                 if (money > 0)
                 {
+                    weatherParticles[0].Stop();
+                    weatherParticles[1].Stop();
+
                     DailyCosts = 0;
                     DailyEarnings = 0;
                     spentPerPersonDeviation = BaseSpentPerPerson / 6f;
@@ -417,54 +440,67 @@ public class GameManager : MonoBehaviour
 
         if(s == SEASONS.SPRING || s == SEASONS.SUMMER || s == SEASONS.FALL)
         {
-            int r = Random.Range(0, 2);
+            int r = Random.Range(0, 3);
 
             switch(r)
             {
                 case 0:
                     CurrentDayWeather = WEATHER.Sunny;
                     weatherModifier = 1.5f;
+                    weatherImage.sprite = weatherSprites[0];
                     break;
                 case 1:
                     CurrentDayWeather = WEATHER.Rainy;
                     weatherModifier = .8f;
+                    weatherImage.sprite = weatherSprites[1];
+                    weatherParticles[0].Play();
                     break;
                 case 2:
                     CurrentDayWeather = WEATHER.Windy;
                     weatherModifier = 1.2f;
+                    weatherImage.sprite = weatherSprites[2];
                     break;
                 default:
                     CurrentDayWeather = WEATHER.Sunny;
                     weatherModifier = 1.5f;
+                    weatherImage.sprite = weatherSprites[0];
                     break;
             }
             
         }
         else
         {
-            int r = Random.Range(0, 3);
+            int r = Random.Range(0, 4);
 
             switch (r)
             {
                 case 0:
                     CurrentDayWeather = WEATHER.Sunny;
                     weatherModifier = 1.5f;
+                    weatherImage.sprite = weatherSprites[0];
                     break;
                 case 1:
                     CurrentDayWeather = WEATHER.Rainy;
                     weatherModifier = .8f;
+                    weatherImage.sprite = weatherSprites[1];
+                    weatherParticles[0].Play();
                     break;
                 case 2:
                     CurrentDayWeather = WEATHER.Windy;
                     weatherModifier = 1.2f;
+                    weatherImage.sprite = weatherSprites[2];
                     break;
                 case 3:
                     CurrentDayWeather = WEATHER.Snowy;
                     weatherModifier = .6f;
+                    weatherImage.sprite = weatherSprites[3];
+                    weatherParticles[1].Play();
                     break;
                 default:
                     CurrentDayWeather = WEATHER.Snowy;
                     weatherModifier = .6f;
+                    weatherImage.sprite = weatherSprites[3];
+                    weatherParticles[1].Play();
                     break;
             }
         }
@@ -664,11 +700,25 @@ public class GameManager : MonoBehaviour
     public void MoveToResults()
     {
         reportPanel.SetActive(true);
-        reportOverallText.text = "The End Results";
+        reportOverallText.text = endingTitles[numQuestionsRight];
+        ratingSlider.value = numQuestionsRight;
+        for(int i = 0; i < 3; i++)
+        {
+            if (questionsCorrect[i])
+                ratingText.text += endingSentences[i * 2] + "\n";
+            else
+                ratingText.text += endingSentences[(i * 2) + 1] + "\n";
+        }
     }
 
     public void SeasonalContinue()
     {
         seasonalAnimalPanel.SetActive(false);
+    }
+
+    public void QuestionAnswered(int index)
+    {
+        numQuestionsRight++;
+        questionsCorrect[index] = true;
     }
 }

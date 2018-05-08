@@ -1,5 +1,5 @@
 The start of a new zoo is an exciting time, and the novelty has a few people eager to show their support. In total, donations from your first day amount to $2000.	Accept Donations	I’m No Charity Case	0	0	2000	0	0
-A government employee comes to survey your zoo in its early stage. He tells you that they will be routinely checking in on the state of your zoo in the future, and that he expects great things.	Okay	Okay but Lower	0	5	1	5	1
+A government employee comes to survey your zoo in its early stage. He tells you that they will be routinely checking in on the state of your zoo in the future, and that he expects great things.	Okay	Okay but Lower	0	5	0	5	0
 Some of your animals look a bit restless, and it's causing concern for the guests. You're new to this whole zoo thing, but you've got a couple ideas for solutions.	Add Natural Decor to the Enclosure	Give the Animals Toys	0	2	5	2	-5
 There have been a number of requests recently that the zoo expand its animal offerings. More animals would mean more people interested in visiting, and lions are a crowd favorite these days. However proper care of lions is neither easy nor inexpensive.	Get Lions	Don’t Get Lions	0	1	0	1	0
 TelCorp, a locally-based megacorporation, offers to donate a sum of money in exchange for advertisement throughout your zoo.	Accept Donation	Refuse	0	0,3	6000,-2	0	0
